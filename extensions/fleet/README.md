@@ -80,7 +80,7 @@ To enroll an agent from a VM:
   requires a paid Platinum/Enterprise subscription. Getting another 30-day trial means wiping the `elasticsearch`
   volume and rebuilding the cluster, which discards all data.
 - Fleet Server and lab agents communicate over plain HTTP, and `ELASTIC_PASSWORD` defaults to `changeme`. Enrollment
-  tokens, endpoint telemetry, and the superuser password all cross the network in cleartext — don't run this on a
+  tokens, endpoint telemetry, and the superuser password all cross the network in cleartext. Don't run this on a
   network you don't control.
 
 ## See also

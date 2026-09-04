@@ -38,4 +38,4 @@ Docker container: [Run Heartbeat on Docker][heartbeat-docker].
 [heartbeat-docker]: https://www.elastic.co/docs/reference/beats/heartbeat/running-on-docker
 [heartbeat-doc]: https://www.elastic.co/docs/reference/beats/heartbeat
 
-[setup]: ../../README.md#how-to-re-execute-the-setup
+[setup]: https://github.com/deviantony/docker-elk#how-to-re-execute-the-setup

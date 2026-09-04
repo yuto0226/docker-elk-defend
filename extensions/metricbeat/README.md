@@ -46,4 +46,4 @@ Docker container: [Run Metricbeat on Docker][metricbeat-docker].
 [metricbeat-docker]: https://www.elastic.co/docs/reference/beats/metricbeat/running-on-docker
 [metricbeat-doc]: https://www.elastic.co/docs/reference/beats/metricbeat
 
-[setup]: ../../README.md#how-to-re-execute-the-setup
+[setup]: https://github.com/deviantony/docker-elk#how-to-re-execute-the-setup
