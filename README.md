@@ -20,11 +20,12 @@ This fork only tracks `main` (Elastic 9.x). It does not carry upstream's other b
 ## tl;dr
 
 ```sh
-docker compose up setup
+docker compose -f docker-compose.yml -f extensions/fleet/fleet-compose.yml up setup
 ```
 
 ```sh
-docker compose up
+docker compose -f docker-compose.yml -f extensions/fleet/fleet-compose.yml up -d
+docker compose -f docker-compose.yml -f extensions/fleet/fleet-compose.yml up --exit-code-from=fleet-setup fleet-setup
 ```
 
 <picture>
@@ -54,8 +55,7 @@ By default, the stack exposes the following ports:
 * 9200: Elasticsearch HTTP
 * 9300: Elasticsearch TCP transport
 * 5601: Kibana
-
-The [Fleet extension](extensions/fleet) additionally exposes 8220 (Fleet Server).
+* 8220: Fleet Server
 
 > [!WARNING]
 > Elasticsearch's [bootstrap checks][bootstrap-checks] are disabled by default to simplify development setups. For
@@ -73,29 +73,36 @@ Clone this repository onto the Docker host that will run the stack:
 git clone https://github.com/yuto0226/docker-elk-defend.git
 ```
 
-Then, initialize the Elasticsearch users and groups required by docker-elk:
+Then, initialize the Elasticsearch users and groups required by docker-elk. This uses the Fleet compose overlay
+because Fleet needs the same initial license/user setup as the core stack:
 
 ```sh
-docker compose up setup
+docker compose -f docker-compose.yml -f extensions/fleet/fleet-compose.yml up setup
 ```
 
-Generate encryption keys for Kibana. Required for Fleet, not optional in this fork:
+[`.env`](.env) already ships with working Kibana encryption keys (`KIBANA_SECURITY_ENCRYPTION_KEY`,
+`KIBANA_ENCRYPTED_SAVED_OBJECTS_ENCRYPTION_KEY`, `KIBANA_REPORTING_ENCRYPTION_KEY`), required for Fleet. To use your
+own instead of the shared example values, generate new ones and replace them in `.env`:
 
 ```sh
 docker compose up kibana-genkeys
 ```
 
-Copy the three generated values into the matching variables in the [`.env`](.env) file
-(`KIBANA_SECURITY_ENCRYPTION_KEY`, `KIBANA_ENCRYPTED_SAVED_OBJECTS_ENCRYPTION_KEY`, `KIBANA_REPORTING_ENCRYPTION_KEY`).
-
-Start the other stack components:
+Start the core stack and Fleet Server:
 
 ```sh
-docker compose up
+docker compose -f docker-compose.yml -f extensions/fleet/fleet-compose.yml up -d
 ```
 
 > [!NOTE]
-> You can also run all services in the background (detached mode) by appending the `-d` flag to the above command.
+> Drop the `-d` flag to run in the foreground instead.
+
+Once Kibana and Fleet Server are up, create the Elastic Defend package policy. This step is idempotent, safe to
+re-run any time (e.g. after rebuilding the stack):
+
+```sh
+docker compose -f docker-compose.yml -f extensions/fleet/fleet-compose.yml up --exit-code-from=fleet-setup fleet-setup
+```
 
 Give Kibana about a minute to initialize, then access the Kibana web UI by opening <http://localhost:5601> in a web
 browser and use the following (default) credentials to log in:
@@ -109,20 +116,19 @@ browser and use the following (default) credentials to log in:
 > passwords for anything beyond local testing is covered in upstream's
 > [Setting up user authentication][upstream-auth].
 
+At this point Fleet Server is running and the `detection-lab-endpoints` agent policy has an Elastic Defend
+integration attached. See [`extensions/fleet/README.md`](extensions/fleet/README.md) for enrolling Elastic Defend
+agents from lab VMs.
+
 ### Cleanup
 
-Elasticsearch data is persisted inside a volume by default.
+Elasticsearch and Fleet Server data are persisted inside volumes by default.
 
 In order to entirely shutdown the stack and remove all persisted data, use the following Docker Compose command:
 
 ```sh
-docker compose --profile=setup down -v
+docker compose -f docker-compose.yml -f extensions/fleet/fleet-compose.yml --profile=setup down -v
 ```
-
-## Fleet Server and Elastic Defend
-
-See [`extensions/fleet/README.md`](extensions/fleet/README.md) for enabling Fleet Server and enrolling Elastic Defend
-agents from lab VMs.
 
 ## How to disable paid features
 

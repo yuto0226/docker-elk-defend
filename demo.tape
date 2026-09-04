@@ -17,10 +17,10 @@ Set Theme "iTerm2 Light Background"
 Hide
 
 # BEGIN - Reset to clean state
-Type "docker compose down setup"
+Type "docker compose -f docker-compose.yml -f extensions/fleet/fleet-compose.yml down setup"
 Enter
 Sleep 2s
-Type "docker compose down -v"
+Type "docker compose -f docker-compose.yml -f extensions/fleet/fleet-compose.yml down -v"
 Enter
 Sleep 6s
 Type "docker compose up elasticsearch -d"
@@ -34,16 +34,22 @@ Ctrl+L
 
 Show
 
-Type "docker compose up setup"
+Type "docker compose -f docker-compose.yml -f extensions/fleet/fleet-compose.yml up setup"
 Sleep 3s
 Enter
 Sleep 20s
 
 Enter 2
-Type "docker compose up -d"
+Type "docker compose -f docker-compose.yml -f extensions/fleet/fleet-compose.yml up -d"
 Sleep 3s
 Enter
 Sleep 6s
+
+Enter 2
+Type "docker compose -f docker-compose.yml -f extensions/fleet/fleet-compose.yml up --exit-code-from=fleet-setup fleet-setup"
+Sleep 3s
+Enter
+Sleep 12s
 
 Enter 2
 Type "curl -s http://localhost:9200 -u elastic:changeme"
