@@ -80,6 +80,17 @@ jobs:
           .github/workflows/scripts/run-tests-fleet.sh
 
       #
+      # Elastic Defend (Fleet extension)
+      #
+
+      - name: Execute Fleet Elastic Defend test suite
+        run: |
+          # run twice: first creates the endpoint-1 package policy, second must be a no-op
+          docker compose -f docker-compose.yml -f extensions/fleet/fleet-compose.yml up --exit-code-from=fleet-setup fleet-setup
+          docker compose -f docker-compose.yml -f extensions/fleet/fleet-compose.yml up --exit-code-from=fleet-setup fleet-setup
+          .github/workflows/scripts/run-tests-fleet-defend.sh
+
+      #
       # Metricbeat
       #
 
