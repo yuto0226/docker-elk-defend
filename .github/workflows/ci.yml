@@ -50,9 +50,6 @@ jobs:
           -f extensions/heartbeat/heartbeat-compose.yml
           build
 
-      - name: Generate Kibana encryption keys
-        run: docker container run --rm docker-elk-kibana bin/kibana-encryption-keys generate -q >>kibana/config/kibana.yml
-
       - name:  Set up users and roles
         run: docker compose up --exit-code-from=setup setup
 
