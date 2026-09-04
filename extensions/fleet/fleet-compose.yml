@@ -22,6 +22,10 @@ services:
       FLEET_SERVER_INSECURE_HTTP: '1'
       FLEET_SERVER_HOST: 0.0.0.0
       FLEET_SERVER_POLICY_ID: fleet-server-policy
+      # Fleet Server's own direct connection to Elasticsearch (agent status,
+      # its own monitoring). Defaults to https://localhost:9200 if unset,
+      # which does not resolve inside this container.
+      FLEET_SERVER_ELASTICSEARCH_HOST: http://elasticsearch:9200
       # Fleet plugin in Kibana
       KIBANA_FLEET_SETUP: '1'
       # Enrollment.
@@ -39,6 +43,34 @@ services:
       - elk
     depends_on:
       - elasticsearch
+      - kibana
+
+  # One-off script which creates the 'endpoint-1' (Elastic Defend) package
+  # policy for the 'detection-lab-endpoints' agent policy via the Fleet API.
+  # Can't be preconfigured in kibana.yml: Security Solution generates Defend's
+  # default config in a callback that only runs on API-driven creation.
+  #
+  # Requires a running Kibana, so unlike the core 'setup' service this runs
+  # after 'docker compose up', not before:
+  #   docker compose -f docker-compose.yml -f extensions/fleet/fleet-compose.yml up fleet-setup
+  fleet-setup:
+    profiles:
+      - setup
+    build:
+      context: setup/
+      args:
+        ELASTIC_VERSION: ${ELASTIC_VERSION}
+    init: true
+    volumes:
+      - ./setup/fleet-entrypoint.sh:/entrypoint.sh:ro,Z
+      - ./setup/lib.sh:/lib.sh:ro,Z
+    environment:
+      ELASTIC_PASSWORD: ${ELASTIC_PASSWORD:-}
+      KIBANA_HOST: kibana
+      FLEET_AGENT_POLICY_ID: detection-lab-endpoints
+    networks:
+      - elk
+    depends_on:
       - kibana
 
 volumes:
