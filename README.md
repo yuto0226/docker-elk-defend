@@ -14,11 +14,6 @@ Based on the [official Docker images][elastic-docker] from Elastic:
 * [Logstash](https://github.com/elastic/logstash/tree/main/docker)
 * [Kibana](https://github.com/elastic/kibana/tree/main/src/dev/build/tasks/os_packages/docker_generator)
 
-Other available stack variants:
-
-* [`tls`](https://github.com/deviantony/docker-elk/tree/tls): TLS encryption enabled in Elasticsearch, Kibana (opt in),
-  and Fleet
-
 > [!IMPORTANT]
 > [Platinum][subscriptions] features are enabled by default for a [trial][license-mngmt] duration of **30 days**. After
 > this evaluation period, you will retain access to all the free features included in the Open Basic license seamlessly,
@@ -285,13 +280,6 @@ command.
 > [!IMPORTANT]
 > Always pay attention to the [official upgrade instructions][upgrade] for each individual component before performing a
 > stack upgrade.
-
-Older major versions are also supported on separate branches:
-
-* [`release-8.x`](https://github.com/deviantony/docker-elk/tree/release-8.x): 8.x series
-* [`release-7.x`](https://github.com/deviantony/docker-elk/tree/release-7.x): 7.x series (End-of-Life)
-* [`release-6.x`](https://github.com/deviantony/docker-elk/tree/release-6.x): 6.x series (End-of-life)
-* [`release-5.x`](https://github.com/deviantony/docker-elk/tree/release-5.x): 5.x series (End-of-life)
 
 ## Configuration
 
